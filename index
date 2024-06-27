@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Center Pac-Man</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+#gameContainer {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    background-color: #c8e6c9;
+    border: 2px solid #388e3c;
+}
+
+canvas {
+    display: block;
+}
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = 600;
+canvas.height = 600;
+
+const gridSize = 20;
+const tileCount = canvas.width / gridSize;
+
+let playerX = 10;
+let playerY = 10;
+let playerDX = 0;
+let playerDY = 0;
+
+let foodX = Math.floor(Math.random() * tileCount);
+let foodY = Math.floor(Math.random() * tileCount);
+
+const gardenLayout = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
+    [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+];
+
+function drawGarden() {
+    for (let row = 0; row < gardenLayout.length; row++) {
+        for (let col = 0; col < gardenLayout[row].length; col++) {
+            if (gardenLayout[row][col] === 1) {
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(col * gridSize, row * gridSize, gridSize, gridSize);
+            } else {
+                ctx.fillStyle = '#8BC34A';
+                ctx.fillRect(col * gridSize, row * gridSize, gridSize, gridSize);
+            }
+        }
+    }
+}
+
+function drawPlayer() {
+    ctx.fillStyle = 'yellow';
+    ctx.beginPath();
+    ctx.arc(playerX * gridSize + gridSize / 2, playerY * gridSize + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawFood() {
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(foodX * gridSize + gridSize / 2, foodY * gridSize + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function update() {
+    playerX += playerDX;
+    playerY += playerDY;
+
+    if (playerX < 0) playerX = tileCount - 1;
+    if (playerX >= tileCount) playerX = 0;
+    if (playerY < 0) playerY = tileCount - 1;
+    if (playerY >= tileCount)
